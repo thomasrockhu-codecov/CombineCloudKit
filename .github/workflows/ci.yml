@@ -29,12 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift: ['5.5']
+        swift: ['5.6', '5.7']
         platform: [macOS, iOS]
-        include:
-          - swift: '5.5'
-            platform: mac-catalyst
-            platform-name: Mac Catalyst
     steps:
       - name: Clone
         uses: actions/checkout@v2
@@ -49,6 +45,7 @@ jobs:
         if: ${{ matrix.name != 'Build' }}
         uses: codecov/codecov-action@v1
         with:
+          token: 47eaddcf-59e4-447f-8e64-18897dadd8ba
           flags: ${{ matrix.platform }},swift${{ matrix.swift }}
   sanitize:
     name: ${{ matrix.name }} Sanitizer
