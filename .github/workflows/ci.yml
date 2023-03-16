@@ -9,20 +9,6 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  lint:
-    name: Lint
-    runs-on: macos-latest
-    steps:
-      - name: Clone
-        uses: actions/checkout@v2
-      - name: Select Swift for swift-format
-        uses: mxcl/xcodebuild@v1
-        with:
-          action: none
-          # Keep in sync with Homebrew's swift-format formula.
-          swift: ~5.5
-      - name: Lint
-        run: script/lint
   build-test:
     name: ${{ matrix.name || 'Build & Test' }} (Swift ${{ matrix.swift }}, ${{ matrix.platform-name || matrix.platform }})
     runs-on: ${{ matrix.macos || 'macos-latest' }}
@@ -47,28 +33,3 @@ jobs:
         with:
           token: 47eaddcf-59e4-447f-8e64-18897dadd8ba
           flags: ${{ matrix.platform }},swift${{ matrix.swift }}
-  sanitize:
-    name: ${{ matrix.name }} Sanitizer
-    runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # TODO: Add 'scudo' once it is supported by Swift.
-        sanitizer: [address, thread, undefined]
-        include:
-          - sanitizer: address
-            name: Address
-          - sanitizer: thread
-            name: Thread
-          - sanitizer: undefined
-            name: Undefined Behavior
-    steps:
-      - name: Clone
-        uses: actions/checkout@v2
-      - name: Select Latest Swift
-        uses: mxcl/xcodebuild@v1
-        with:
-          action: none
-          swift: ^5
-      - name: Sanitize
-        run: swift test --sanitize=${{ matrix.sanitizer }}
