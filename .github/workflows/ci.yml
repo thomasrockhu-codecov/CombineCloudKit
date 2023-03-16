@@ -27,9 +27,17 @@ jobs:
           swift: ~${{ matrix.swift }}
           code-coverage: true
           warnings-as-errors: true
+      - name: Prepare for Code Coverage
+        if: ${{ matrix.name != 'Build' }}
+        uses: sersoft-gmbh/xcode-coverage-action@v2
+        with:
+          fail-on-empty-output: true
+          output: .xcodecov
+          target-name-filter: CombineCloudKit
       - name: Coverage
         if: ${{ matrix.name != 'Build' }}
-        uses: codecov/codecov-action@v1
+        uses: codecov/codecov-action@v3
         with:
           token: 47eaddcf-59e4-447f-8e64-18897dadd8ba
           flags: ${{ matrix.platform }},swift${{ matrix.swift }}
+          directory: .xcodecov
