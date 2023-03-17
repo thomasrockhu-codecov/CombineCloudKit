@@ -12,11 +12,15 @@ e="\033[0;90m"
 y="\033[0;33m"
 x="\033[0m"
 
+set -x
+
 say() {
   echo -e "$1"
 }
 
 swiftcov() {
+	say "dirname 1"
+	say $(dirname "$1")
   _dir=$(dirname "$1" | sed 's/\(Build\).*/\1/g')
   for _type in app framework xctest
   do
