@@ -40,6 +40,8 @@ swiftcov() {
         xcrun llvm-cov show -instr-profile "$1" "$dest" > "$_proj_name.$_type.coverage.txt" \
          || say "    ${r}x>${x} llvm-cov failed to produce results for $dest"
         say "meow"
+        ls
+        say "$_proj_name.$_type.coverage.txt"
         cat "$_proj_name.$_type.coverage.txt"
       fi
     done
