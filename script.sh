@@ -37,8 +37,10 @@ swiftcov() {
 
         _proj_name=$(echo "$_proj" | sed -e 's/[[:space:]]//g')
         # shellcheck disable=SC2086
-        xcrun llvm-cov show $beta_xcode_partials -instr-profile "$1" "$dest" > "$_proj_name.$_type.coverage.txt" \
+        xcrun llvm-cov show -instr-profile "$1" "$dest" > "$_proj_name.$_type.coverage.txt" \
          || say "    ${r}x>${x} llvm-cov failed to produce results for $dest"
+        say "meow"
+        cat "$_proj_name.$_type.coverage.txt"
       fi
     done
   done
