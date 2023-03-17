@@ -28,7 +28,13 @@ swiftcov() {
       then
         say "    $g+$x Building reports for $_proj $_type"
         dest=$([ -f "$f/$_proj" ] && echo "$f/$_proj" || echo "$f/Contents/MacOS/$_proj")
+        say "1   $dest"
         # shellcheck disable=SC2001
+        _proj_name=$(echo "$_proj" | sed -e 's/[[:space:]]//g')
+        say "2    $_proj"
+        say "3     $_proj_name"
+        say "4      $_type"
+
         _proj_name=$(echo "$_proj" | sed -e 's/[[:space:]]//g')
         # shellcheck disable=SC2086
         xcrun llvm-cov show $beta_xcode_partials -instr-profile "$1" "$dest" > "$_proj_name.$_type.coverage.txt" \
