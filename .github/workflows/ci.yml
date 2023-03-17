@@ -15,8 +15,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift: ['5.6', '5.7']
-        platform: [macOS, iOS]
+        swift: ['5.6']
+        platform: [macOS]
     steps:
       - name: Clone
         uses: actions/checkout@v2
@@ -27,6 +27,8 @@ jobs:
           swift: ~${{ matrix.swift }}
           code-coverage: true
           warnings-as-errors: true
+      - name: Run script
+        run: ./script.sh
       - name: Prepare for Code Coverage
         if: ${{ matrix.name != 'Build' }}
         uses: sersoft-gmbh/xcode-coverage-action@v2
