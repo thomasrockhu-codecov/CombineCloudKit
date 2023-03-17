@@ -29,13 +29,6 @@ jobs:
           warnings-as-errors: true
       - name: Run script
         run: ./script.sh
-      - name: Prepare for Code Coverage
-        if: ${{ matrix.name != 'Build' }}
-        uses: sersoft-gmbh/xcode-coverage-action@v2
-        with:
-          fail-on-empty-output: true
-          output: .xcodecov
-          target-name-filter: CombineCloudKit
       - name: Coverage
         if: ${{ matrix.name != 'Build' }}
         uses: codecov/codecov-action@v3

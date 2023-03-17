@@ -64,19 +64,6 @@ then
 	else
 		say "    ${e}->${x} No Swift coverage found"
 	fi
-
-	# Obj-C Gcov Coverage
-	if [ "$ft_gcov" = "1" ];
-	then
-		say "    ${e}->${x} Running $gcov_exe for Obj-C"
-		if [ "$ft_gcovout" = "0" ];
-		then
-			# suppress gcov output
-			bash -c "find $ddp -type f -name '*.gcda' $gcov_include $gcov_ignore -exec $gcov_exe -p $gcov_arg {} +" >/dev/null 2>&1 || true
-		else
-			bash -c "find $ddp -type f -name '*.gcda' $gcov_include $gcov_ignore -exec $gcov_exe -p $gcov_arg {} +" || true
-		fi
-	fi
 fi
 
 if [ "$ft_xcodeplist" = "1" ] && [ -d "$ddp" ];
