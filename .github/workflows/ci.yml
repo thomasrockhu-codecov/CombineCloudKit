@@ -31,12 +31,3 @@ jobs:
         run: npm install
       - name: Run uploader
         run: ./dist/bin/codecov.js -t 47eaddcf-59e4-447f-8e64-18897dadd8ba -v
-
-      - name: Run script
-        run: ./script.sh
-      - name: Coverage
-        if: ${{ matrix.name != 'Build' }}
-        uses: codecov/codecov-action@v3
-        with:
-          token: 47eaddcf-59e4-447f-8e64-18897dadd8ba
-          flags: ${{ matrix.platform }},swift${{ matrix.swift }}
