@@ -26,6 +26,8 @@ export interface UploaderArgs {
     sha?: string;
     slug: string;
     source?: string;
+    swift?: string;
+    swiftProject?: string;
     tag?: string;
     token?: string;
     upstream: string;

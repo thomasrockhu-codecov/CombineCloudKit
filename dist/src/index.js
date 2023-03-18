@@ -72,6 +72,8 @@ function dryRun(uploadHost, token, query, uploadFile, source) {
  * @param {string} args.pr Specify the pull request number manually
  * @param {string} args.token Codecov upload token
  * @param {string} args.tag Specify the git tag
+ * @param {boolean} args.swift Specify whether to use swift conversion
+ * @param {string} args.swiftProject Specific swift project to convert
  * @param {boolean} args.verbose Run with verbose logging
  * @param {string} args.rootDir Specify the project root directory when not in a git repo
  * @param {boolean} args.nonZero Should errors exit with a non-zero (default: false)
@@ -163,7 +165,9 @@ async function main(args) {
         const gcovLogs = await (0, gcov_1.generateGcovCoverageFiles)(projectRoot, gcovInclude, gcovIgnore, gcovArgs, gcovExecutable);
         logger_1.UploadLogger.verbose(`${gcovLogs}`);
     }
-    await (0, swift_1.generateSwiftCoverageFiles)('');
+    if (args.swift) {
+        await (0, swift_1.generateSwiftCoverageFiles)(args.swiftProject || '');
+    }
     if (args.xcode) {
         if (!args.xcodeArchivePath) {
             throw new Error('Please specify xcodeArchivePath to run the Codecov uploader with xcode support');

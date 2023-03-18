@@ -41,6 +41,9 @@ async function generateSwiftCoverageFiles(project) {
     (0, logger_1.info)('Processing Xcode reports via llvm-cov...');
     const derivedDataDir = `${os_1.default.homedir()}/Library/Developer/Xcode/DerivedData`;
     logger_1.UploadLogger.verbose(`DerivedData folder: ${derivedDataDir}`);
+    if (project == "") {
+        (0, logger_1.info)("    hint: Speed up Swift processing by using use -J 'AppName'${x} (regexp accepted)");
+    }
     const profDataFiles = await fast_glob_1.default.sync(['**/*.profdata'], {
         cwd: derivedDataDir,
         absolute: true,
@@ -68,9 +71,7 @@ async function convertSwiftFile(profDataFile, project) {
     if (profDataFile.includes(BUILD)) {
         dirName = dirName.substr(0, dirName.indexOf(BUILD) + (BUILD.length));
     }
-    (0, logger_1.info)(`dirName ${dirName}`);
     for (const fileType of ['app', 'framework', 'xctest']) {
-        (0, logger_1.info)(`fileType ${fileType}`);
         const reportDirs = await fast_glob_1.default.sync([`**/*.${fileType}`], {
             cwd: dirName,
             absolute: true,
@@ -81,12 +82,19 @@ async function convertSwiftFile(profDataFile, project) {
         }
         for (const reportDir of reportDirs) {
             const proj = path_1.default.basename(reportDir, `.${fileType}`);
+            if (project != "" && proj != project) {
+                logger_1.UploadLogger.verbose(`  Skipping ${proj} as it does not match project ${project}`);
+                continue;
+            }
             (0, logger_1.info)(`  Building reports for ${proj} ${fileType}`);
+            logger_1.UploadLogger.verbose(`  Reports sourced from ${reportDir}`);
             let dest = path_1.default.join(reportDir, proj);
             if (!fs_1.default.existsSync(dest)) {
                 dest = path_1.default.join(reportDir, 'Contents', 'MacOS', proj);
             }
-            await fsPromise.writeFile(`${proj.replace(/\s/g, '')}.${fileType}.coverage.txt`, (0, util_1.runExternalProgram)('xcrun', ['llvm-cov', 'show', '-instr-profile', profDataFile, dest]));
+            const outputFile = `${proj.replace(/\s/g, '')}.${fileType}.coverage.txt`;
+            await fsPromise.writeFile(outputFile, (0, util_1.runExternalProgram)('xcrun', ['llvm-cov', 'show', '-instr-profile', profDataFile, dest]));
+            logger_1.UploadLogger.verbose(`  Coverage report written to ${outputFile}`);
         }
     }
 }
