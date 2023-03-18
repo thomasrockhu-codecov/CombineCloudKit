@@ -38,11 +38,11 @@ async function generateSwiftCoverageFiles(project) {
     if (!(0, util_1.isProgramInstalled)('xcrun')) {
         throw new Error('xcrun is not installed, cannot process files');
     }
-    (0, logger_1.info)('Processing Xcode reports via llvm-cov...');
+    (0, logger_1.info)('==> Processing Xcode reports via llvm-cov...');
     const derivedDataDir = `${os_1.default.homedir()}/Library/Developer/Xcode/DerivedData`;
-    logger_1.UploadLogger.verbose(`DerivedData folder: ${derivedDataDir}`);
+    logger_1.UploadLogger.verbose(`  DerivedData folder: ${derivedDataDir}`);
     if (project == "") {
-        (0, logger_1.info)("    hint: Speed up Swift processing by using use -J 'AppName'${x} (regexp accepted)");
+        (0, logger_1.info)("   hint: Speed up Swift processing by using use -J 'AppName'${x} (regexp accepted)");
     }
     const profDataFiles = await fast_glob_1.default.sync(['**/*.profdata'], {
         cwd: derivedDataDir,
@@ -50,27 +50,29 @@ async function generateSwiftCoverageFiles(project) {
         onlyFiles: true,
     });
     if (profDataFiles.length == 0) {
-        (0, logger_1.info)('No .profdata files found.');
+        (0, logger_1.info)('  -> No swift coverage found.');
     }
     else {
         (0, logger_1.info)(`Found ${profDataFiles.length} profdata files:`);
     }
     for (const profDataFile of profDataFiles) {
-        (0, logger_1.info)(profDataFile);
+        (0, logger_1.info)(`  ${profDataFile}`);
     }
+    const outputFiles = [];
     for (const profDataFile of profDataFiles) {
-        await convertSwiftFile(profDataFile, project);
+        outputFiles.concat(await convertSwiftFile(profDataFile, project));
     }
-    return profDataFiles;
+    return outputFiles;
 }
 exports.generateSwiftCoverageFiles = generateSwiftCoverageFiles;
 async function convertSwiftFile(profDataFile, project) {
-    (0, logger_1.info)(`Starting conversion of ${profDataFile}`);
+    logger_1.UploadLogger.verbose(`Starting conversion of ${profDataFile}`);
     let dirName = path_1.default.dirname(profDataFile);
     const BUILD = 'Build';
     if (profDataFile.includes(BUILD)) {
         dirName = dirName.substr(0, dirName.indexOf(BUILD) + (BUILD.length));
     }
+    const outputFiles = [];
     for (const fileType of ['app', 'framework', 'xctest']) {
         const reportDirs = await fast_glob_1.default.sync([`**/*.${fileType}`], {
             cwd: dirName,
@@ -86,7 +88,7 @@ async function convertSwiftFile(profDataFile, project) {
                 logger_1.UploadLogger.verbose(`  Skipping ${proj} as it does not match project ${project}`);
                 continue;
             }
-            (0, logger_1.info)(`  Building reports for ${proj} ${fileType}`);
+            (0, logger_1.info)(`  + Building reports for ${proj} ${fileType}`);
             logger_1.UploadLogger.verbose(`  Reports sourced from ${reportDir}`);
             let dest = path_1.default.join(reportDir, proj);
             if (!fs_1.default.existsSync(dest)) {
@@ -95,7 +97,9 @@ async function convertSwiftFile(profDataFile, project) {
             const outputFile = `${proj.replace(/\s/g, '')}.${fileType}.coverage.txt`;
             await fsPromise.writeFile(outputFile, (0, util_1.runExternalProgram)('xcrun', ['llvm-cov', 'show', '-instr-profile', profDataFile, dest]));
             logger_1.UploadLogger.verbose(`  Coverage report written to ${outputFile}`);
+            outputFiles.push(outputFile);
         }
     }
+    return outputFiles;
 }
 //# sourceMappingURL=swift.js.map
