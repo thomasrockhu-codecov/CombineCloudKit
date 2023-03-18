@@ -19,9 +19,7 @@ say() {
 }
 
 swiftcov() {
-	say "dirname 1"
-	say $(dirname "$1")
-  _dir=$(dirname "$1" | sed 's/\(Build\).*/\1/g')
+  _dir=$(dirname "$1" | sed 's/\(Build\).*/\1/g') # gets parent directory. If `Build` is in the path, set _dir up to that directory.
   for _type in app framework xctest
   do
     find "$_dir" -name "*.$_type" | while read -r f
@@ -32,21 +30,11 @@ swiftcov() {
       then
         say "    $g+$x Building reports for $_proj $_type"
         dest=$([ -f "$f/$_proj" ] && echo "$f/$_proj" || echo "$f/Contents/MacOS/$_proj")
-        say "1   $dest"
         # shellcheck disable=SC2001
-        _proj_name=$(echo "$_proj" | sed -e 's/[[:space:]]//g')
-        say "2    $_proj"
-        say "3     $_proj_name"
-        say "4      $_type"
-
         _proj_name=$(echo "$_proj" | sed -e 's/[[:space:]]//g')
         # shellcheck disable=SC2086
         xcrun llvm-cov show -instr-profile "$1" "$dest" > "$_proj_name.$_type.coverage.txt" \
          || say "    ${r}x>${x} llvm-cov failed to produce results for $dest"
-        say "meow"
-        ls
-        say "$_proj_name.$_type.coverage.txt"
-        cat "$_proj_name.$_type.coverage.txt"
       fi
     done
   done
