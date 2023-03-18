@@ -47,7 +47,7 @@ async function convertSwiftFile(profDataFile, project) {
     (0, logger_1.info)(`dirName ${dirName}`);
     for (const fileType of ['app', 'framework', 'xctest']) {
         (0, logger_1.info)(`fileType ${fileType}`);
-        const reportDirs = await fast_glob_1.default.sync([`**/*.${fileType}`], {
+        const reportDirs = await fast_glob_1.default.sync([`*.${fileType}`], {
             cwd: dirName,
             absolute: true,
         });
