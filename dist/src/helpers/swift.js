@@ -1,10 +1,34 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateSwiftCoverageFiles = void 0;
 const fs_1 = __importDefault(require("fs"));
+const fsPromise = __importStar(require("fs/promises"));
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -56,14 +80,13 @@ async function convertSwiftFile(profDataFile, project) {
             continue;
         }
         for (const reportDir of reportDirs) {
-            const proj = path_1.default.basename(reportDir, fileType);
+            const proj = path_1.default.basename(reportDir, `.${fileType}`);
             (0, logger_1.info)(`  Building reports for ${proj} ${fileType}`);
             let dest = path_1.default.join(reportDir, proj);
             if (!fs_1.default.existsSync(dest)) {
                 dest = path_1.default.join(reportDir, 'Contents', 'MacOS', proj);
             }
-            const writer = fs_1.default.createWriteStream(`${proj.replace(/\s/g, '')}.${fileType}.coverage.txt`);
-            writer.write((0, util_1.runExternalProgram)('xcrun', ['llvm-cov', 'show', '-instr-profile', profDataFile, dest]));
+            await fsPromise.writeFile(`${proj.replace(/\s/g, '')}.${fileType}.coverage.txt`, (0, util_1.runExternalProgram)('xcrun', ['llvm-cov', 'show', '-instr-profile', profDataFile, dest]));
         }
     }
 }
