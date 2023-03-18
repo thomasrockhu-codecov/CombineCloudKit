@@ -38,12 +38,15 @@ async function generateSwiftCoverageFiles(project) {
 }
 exports.generateSwiftCoverageFiles = generateSwiftCoverageFiles;
 async function convertSwiftFile(profDataFile, project) {
+    (0, logger_1.info)(`Starting conversion of ${profDataFile}`);
     let dirName = path_1.default.dirname(profDataFile);
     const BUILD = 'Build';
     if (profDataFile.includes(BUILD)) {
         dirName = dirName.substr(0, dirName.indexOf(BUILD) + (BUILD.length));
     }
+    (0, logger_1.info)(`dirName ${dirName}`);
     for (const fileType of ['app', 'framework', 'xctest']) {
+        (0, logger_1.info)(`fileType ${fileType}`);
         const reportDirs = await fast_glob_1.default.sync([`**/*.${fileType}`], {
             cwd: dirName,
             absolute: true,
