@@ -29,7 +29,7 @@ jobs:
           warnings-as-errors: true
       - name: Install uploader deps
         run: npm install
-      - name: Run uploader (without proj)
-        run: ./dist/bin/codecov.js -t 47eaddcf-59e4-447f-8e64-18897dadd8ba -v --xs
       - name: Run uploader (with proj)
-        run: ./dist/bin/codecov.js -t 47eaddcf-59e4-447f-8e64-18897dadd8ba -v --xs --xsp CombineCloudKit
+        run: ./dist/bin/codecov.js -t 47eaddcf-59e4-447f-8e64-18897dadd8ba --xs --xsp CombineCloudKit
+      - name: Run uploader (without proj)
+        run: ./dist/bin/codecov.js -t 47eaddcf-59e4-447f-8e64-18897dadd8ba --xs
